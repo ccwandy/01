@@ -129,6 +129,7 @@
   <div class="search-box">
     <input type="text" id="queryInput" placeholder="輸入財編">
     <button onclick="searchData()">查詢</button>
+    <button onclick="clearInput()" style="background:#757575;">清空輸入</button>
   </div>
   <button class="clear-btn" onclick="clearAll()">清除全部歷史紀錄</button>
   <div id="result"></div>
@@ -179,6 +180,10 @@
     function clearAll() {
       historyData = [];
       renderHistory();
+    }
+
+    function clearInput() {
+      document.getElementById("queryInput").value = "";
     }
   </script>
 </body>
