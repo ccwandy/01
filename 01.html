@@ -55,17 +55,42 @@
     }
 
     .result-card {
+      position: relative;
       background: white;
       border-radius: 10px;
       padding: 15px;
       margin-bottom: 15px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      animation: fadeIn 0.3s ease-in-out;
     }
 
     .result-card p {
       margin: 5px 0;
       font-size: 15px;
       color: #444;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .delete-btn:hover {
+      background: #c0392b;
+    }
+
+    /* 動畫 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* 手機優化 */
@@ -89,7 +114,7 @@
   <div id="result"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbycU0b-NTlmvNzp8iqcwyiZ0DCu7fXUq59y0zuNhvCUFdSDHUbVhepkcFqJQYc_0Ioo/exec"; // 換成你的 GAS 網址
+    const API_URL = "https://script.google.com/macros/s/XXXX/exec"; // 換成你的 GAS 網址
 
     async function searchData() {
       const query = document.getElementById("queryInput").value;
@@ -98,23 +123,40 @@
       const response = await fetch(`${API_URL}?q=${encodeURIComponent(query)}`);
       const data = await response.json();
 
-      let html = "";
       if (data.length > 0) {
         data.forEach(item => {
-          html += `
-            <div class="result-card">
-              <p><b>日期：</b> ${item.日期}</p>
-              <p><b>單號：</b> ${item.單號}</p>
-              <p><b>財編：</b> ${item.財編}</p>
-              <p><b>填單人：</b> ${item.填單人}</p>
-              <p><b>備註：</b> ${item.備註 || "—"}</p>
-            </div>`;
+          addResultCard(item);
         });
       } else {
-        html = "<p>查無資料</p>";
+        addResultCard({ 日期: "—", 單號: "—", 財編: query, 填單人: "—", 備註: "查無資料" });
       }
 
-      document.getElementById("result").innerHTML = html;
+      document.getElementById("queryInput").value = ""; // 查詢後清空輸入框
+    }
+
+    // 建立一張紀錄卡片並加入結果區
+    function addResultCard(item) {
+      const resultDiv = document.getElementById("result");
+
+      const card = document.createElement("div");
+      card.className = "result-card";
+
+      card.innerHTML = `
+        <button class="delete-btn" onclick="deleteCard(this)">刪除</button>
+        <p><b>日期：</b> ${item.日期}</p>
+        <p><b>單號：</b> ${item.單號}</p>
+        <p><b>財編：</b> ${item.財編}</p>
+        <p><b>填單人：</b> ${item.填單人}</p>
+        <p><b>備註：</b> ${item.備註 || "—"}</p>
+      `;
+
+      resultDiv.prepend(card); // 新紀錄加在最上面
+    }
+
+    // 刪除單筆紀錄
+    function deleteCard(button) {
+      const card = button.parentElement;
+      card.remove();
     }
   </script>
 </body>
