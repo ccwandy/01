@@ -128,7 +128,7 @@
   <h2>財編查詢系統</h2>
   <div class="search-box">
     <input type="text" id="assetCode" placeholder="財產編號 (例如 1545001729)">
-    <input type="text" id="serialCode" placeholder="流水碼 (例如 0001)">
+    <input type="text" id="serialCode" placeholder="流水碼 (例如 0001)" maxlength="4">
     <button onclick="searchData()">查詢</button>
     <button onclick="clearInput()" style="background:#757575;">清空輸入</button>
   </div>
@@ -139,11 +139,25 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbycU0b-NTlmvNzp8iqcwyiZ0DCu7fXUq59y0zuNhvCUFdSDHUbVhepkcFqJQYc_0Ioo/exec"; // 換成你的 GAS 網址
     let historyData = [];
 
+    // 自動補齊流水碼為 4 碼
+    document.getElementById("serialCode").addEventListener("blur", function () {
+      let val = this.value.trim();
+      if (val && val.length < 4) {
+        this.value = val.padStart(4, "0");
+      }
+    });
+
     async function searchData() {
       const asset = document.getElementById("assetCode").value.trim();
-      const serial = document.getElementById("serialCode").value.trim();
+      let serial = document.getElementById("serialCode").value.trim();
 
       if (!asset || !serial) return alert("請輸入財產編號與流水碼");
+
+      // 確保流水碼為 4 碼
+      if (serial.length < 4) {
+        serial = serial.padStart(4, "0");
+        document.getElementById("serialCode").value = serial;
+      }
 
       const fullCode = asset + serial;
 
@@ -168,7 +182,6 @@
             <p><b>查詢紀錄 #${index + 1}</b></p>
             <p><b>財產編號：</b> ${item.財產編號}</p>
             <p><b>流水碼：</b> ${item.流水碼}</p>
-            <p><b>完整財編：</b> ${item.財編}</p>
             <p><b>日期：</b> ${item.日期}</p>
             <p><b>單號：</b> ${item.單號}</p>
             <p><b>填單人：</b> ${item.填單人}</p>
