@@ -222,9 +222,8 @@
     }
 
     function clearAll() {
-      if (confirm("確定要清除全部歷史紀錄嗎？此動作無法復原！")) {
-        historyData = [];
-        renderHistory();
+      historyData = [];
+      renderHistory();
     }
 
     function clearInput() {
