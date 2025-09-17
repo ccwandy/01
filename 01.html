@@ -222,9 +222,11 @@
     }
 
     function clearAll() {
-      historyData = [];
-      renderHistory();
-    }
+      if (confirm("確定要清除全部歷史紀錄嗎？此動作無法復原！")) {
+        historyData = [];
+        renderHistory();
+      }
+    }    
 
     function clearInput() {
       document.getElementById("assetCode").value = "";
