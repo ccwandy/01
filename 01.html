@@ -29,7 +29,7 @@
 
     input[type="text"] {
       flex: 1;
-      min-width: 200px;
+      min-width: 120px;
       padding: 10px;
       border: 1px solid #444;
       border-radius: 8px;
@@ -127,7 +127,8 @@
 <body>
   <h2>財編查詢系統</h2>
   <div class="search-box">
-    <input type="text" id="queryInput" placeholder="輸入財編">
+    <input type="text" id="assetCode" placeholder="財產編號 (例如 1545001729)">
+    <input type="text" id="serialCode" placeholder="流水碼 (例如 0001)">
     <button onclick="searchData()">查詢</button>
     <button onclick="clearInput()" style="background:#757575;">清空輸入</button>
   </div>
@@ -139,15 +140,19 @@
     let historyData = [];
 
     async function searchData() {
-      const query = document.getElementById("queryInput").value;
-      if (!query) return alert("請輸入財編");
+      const asset = document.getElementById("assetCode").value.trim();
+      const serial = document.getElementById("serialCode").value.trim();
 
-      const response = await fetch(`${API_URL}?q=${encodeURIComponent(query)}`);
+      if (!asset || !serial) return alert("請輸入財產編號與流水碼");
+
+      const fullCode = asset + serial;
+
+      const response = await fetch(`${API_URL}?q=${encodeURIComponent(fullCode)}`);
       const data = await response.json();
 
       if (data.length > 0) {
         data.forEach(item => {
-          historyData.push(item);
+          historyData.push({ ...item, 財產編號: asset, 流水碼: serial });
         });
         renderHistory();
       } else {
@@ -161,9 +166,11 @@
         html += `
           <div class="result-card">
             <p><b>查詢紀錄 #${index + 1}</b></p>
+            <p><b>財產編號：</b> ${item.財產編號}</p>
+            <p><b>流水碼：</b> ${item.流水碼}</p>
+            <p><b>完整財編：</b> ${item.財編}</p>
             <p><b>日期：</b> ${item.日期}</p>
             <p><b>單號：</b> ${item.單號}</p>
-            <p><b>財編：</b> ${item.財編}</p>
             <p><b>填單人：</b> ${item.填單人}</p>
             <p><b>備註：</b> ${item.備註 || "—"}</p>
             <button class="delete-btn" onclick="deleteRecord(${index})">刪除</button>
@@ -183,7 +190,8 @@
     }
 
     function clearInput() {
-      document.getElementById("queryInput").value = "";
+      document.getElementById("assetCode").value = "";
+      document.getElementById("serialCode").value = "";
     }
   </script>
 </body>
