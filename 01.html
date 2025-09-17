@@ -27,7 +27,7 @@
       margin-bottom: 20px;
     }
 
-    input[type="text"] {
+    input[type="text"], input[type="password"] {
       flex: 1;
       min-width: 120px;
       padding: 10px;
@@ -119,9 +119,78 @@
         align-items: stretch;
       }
     }
+
+    /* 🔹 登入彈窗樣式 */
+    #loginModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .login-box {
+      background: #1e1e1e;
+      padding: 30px;
+      border-radius: 12px;
+      width: 300px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    .login-box h3 {
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .login-box input {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #2a2a2a;
+      color: #fff;
+    }
+
+    .login-box button {
+      width: 100%;
+      margin-top: 15px;
+      background: #4CAF50;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+    }
+
+    .login-box button:hover {
+      background: #45a049;
+    }
+
+    .error-msg {
+      color: #e57373;
+      font-size: 14px;
+      margin-top: 8px;
+      display: none;
+    }
   </style>
 </head>
 <body>
+  <!-- 🔹 登入彈窗 -->
+  <div id="loginModal">
+    <div class="login-box">
+      <h3>系統登入</h3>
+      <input type="text" id="loginUser" placeholder="帳號">
+      <input type="password" id="loginPass" placeholder="密碼">
+      <button onclick="checkLogin()">登入</button>
+      <div class="error-msg" id="errorMsg">帳號或密碼錯誤</div>
+    </div>
+  </div>
+
   <h2>財編查詢系統</h2>
   <div class="search-box">
     <input type="text" id="assetCode" placeholder="財產編號 (例如 1545001729)">
@@ -133,20 +202,19 @@
   <div id="result"></div>
 
   <script>
-    // 登入驗證
-    window.onload = function () {
-      let isLoggedIn = false;
-      while (!isLoggedIn) {
-        const user = prompt("請輸入帳號：");
-        const pass = prompt("請輸入密碼：");
-        if (user === "1111" && pass === "2222") {
-          isLoggedIn = true;
-          alert("登入成功！");
-        } else {
-          alert("帳號或密碼錯誤，請重新輸入。");
-        }
+    // 🔹 檢查登入
+    function checkLogin() {
+      const user = document.getElementById("loginUser").value.trim();
+      const pass = document.getElementById("loginPass").value.trim();
+      const errorMsg = document.getElementById("errorMsg");
+
+      if (user === "1111" && pass === "2222") {
+        document.getElementById("loginModal").style.display = "none";
+        alert("登入成功！");
+      } else {
+        errorMsg.style.display = "block";
       }
-    };
+    }
 
     const API_URL = "https://script.google.com/macros/s/AKfycbycU0b-NTlmvNzp8iqcwyiZ0DCu7fXUq59y0zuNhvCUFdSDHUbVhepkcFqJQYc_0Ioo/exec"; // 換成你的 GAS 網址
     let historyData = [];
